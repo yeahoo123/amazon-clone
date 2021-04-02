@@ -1,13 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components'
+import Product from '../../components/Product/Product';
+import {db} from '../../Data/Firebase'
 function Home(props) {
+    const [products, setProducts] = useState([])
+    const getProducts = () => {
+        db.collection('products').onSnapshot(snapshot=> {
+            let temProduct = []
+            temProduct = snapshot.docs.map(doc => (
+                {
+                    id: doc.id,
+                    product: doc.data()
+                }
+            )
+        )
+            setProducts(temProduct)
+    })
+}
+    useEffect( ()=>{
+     getProducts()
+    },[])
+    console.log(products)
     return (
         <Container>
             <Banner>
 
             </Banner>
             <Content>
-
+                {products.map(data => (
+                    <Product 
+                        key = {data.id}
+                        product = {data.product}
+                    />
+                ))}
             </Content>
         </Container>
     );
@@ -30,4 +55,6 @@ const Content = styled.div`
     background: white;
     padding-left: 10px;
     padding-right: 10px;
+    margin-top: -350px;
+    display: flex;
 `
